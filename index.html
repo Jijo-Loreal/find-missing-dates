@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .copy {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+        }
+        .clear {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+        }
+    </style>
+
+
+    <textarea name="excel" id="excel" cols="30" rows="10"></textarea>
+    <textarea name="show" id="show" cols="30" rows="10"></textarea>
+    <button class="copy" onclick="copyText()">Copy</button>
+    <button class="clear" onclick="ClearText()">Clear</button>
+
+
+    <script>
+        const textbox = document.getElementById("excel");
+        const showbox = document.getElementById("show");
+        const clearButton = document.getElementById("clear");
+        const Diff = 1
+        var copytext = ""
+        const splitDate = (dt) => {
+            var parts = dt.split('-')
+            var mydate = new Date(parts[0], parts[1] - 1, parts[2])
+            return mydate
+        }
+
+        const DateDiff = (d1, d2) => {
+            var diff = d2.getTime() - d1.getTime();
+            var daydiff = diff / (1000 * 60 * 60 * 24);
+            return daydiff
+        }
+
+        function copyText() {
+            navigator.clipboard.writeText(" ")
+            var textArea = document.createElement("textarea");
+            textArea.value = copytext;
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(textArea.value)
+        }
+
+        function ClearText() {
+            location.reload()
+        }
+
+        function datefilter(e) {
+            let datelist = e.target.value.split("\n")
+            datelist.shift()
+            datelist.forEach((el, ind) => {
+                if (ind > 0) {
+                    var date1 = splitDate(datelist[ind - 1])
+                    var date2 = splitDate(el)
+                    var actualDiff = DateDiff(date1, date2)
+                    if (actualDiff > Diff) {
+                        if (actualDiff == Diff * 2) {
+                            var d1bef = date1.setDate(date1.getDate() + Diff)
+                            var d1 = new Date(d1bef)
+                            copytext = copytext + `${d1.getDate()}/0${d1.getMonth() + 1}, `
+
+                        } else {
+                            var d1bef = date1.setDate(date1.getDate() + Diff)
+                            var d1 = new Date(d1bef)
+                            var d2bef = date2.setDate(date2.getDate() - Diff)
+                            var d2 = new Date(d2bef)
+                            copytext = copytext + `${d1.getDate()}/0${d1.getMonth() + 1} - ${d2.getDate()}/0${d2.getMonth() + 1}, `
+                        }
+                    }
+                }
+            });
+            showbox.value = copytext == "" ? "Nil" : copytext
+        }
+
+        textbox.addEventListener("change", datefilter)
+    </script>
+</body>
+
+</html>
